@@ -132,9 +132,11 @@ func (i *Client) Search(q *Query) (docs []Document, total int, err error) {
 	}
 	if len(res) > skip {
 		for i := 1; i < len(res); i += skip {
-
-			if d, e := loadDocument(res, i, scoreIdx, payloadIdx, fieldsIdx); e == nil {
+			d, e := loadDocument(res, i, scoreIdx, payloadIdx, fieldsIdx)
+			if e == nil {
 				docs = append(docs, d)
+			} else if e == ErrNilDocument {
+				// do nothing
 			} else {
 				log.Print("Error parsing doc: ", e)
 			}

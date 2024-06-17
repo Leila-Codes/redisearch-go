@@ -1,6 +1,7 @@
 package redisearch
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
@@ -19,6 +20,8 @@ type Document struct {
 	Payload    []byte
 	Properties map[string]interface{}
 }
+
+var ErrNilDocument = errors.New("document content was nil")
 
 // IndexingOptions represent the options for indexing a single document
 type IndexingOptions struct {
@@ -107,7 +110,7 @@ func loadDocument(arr []interface{}, idIdx, scoreIdx, payloadIdx, fieldsIdx int)
 	if fieldsIdx > 0 {
 		lst, ok := arr[idIdx+fieldsIdx].([]interface{})
 		if !ok && arr[idIdx+fieldsIdx] == nil {
-			return doc, fmt.Errorf("document was nil")
+			return doc, ErrNilDocument
 		}
 		doc.loadFields(lst)
 	}
